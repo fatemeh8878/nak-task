@@ -24,6 +24,7 @@ export const AddProductForm = () => {
   const { mutate: addProduct } = useAddProduct();
   const { mutateAsync: addSku } = useAddSku();
   const { data: skuList } = useSkuList();
+  console.log("SKU List:", skuList);
   const { control, handleSubmit, watch, setValue } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
