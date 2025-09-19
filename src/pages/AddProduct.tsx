@@ -20,6 +20,7 @@ import { ControlledInput } from "../components/ui/ControlledInput";
 import { useAttributeDetails, useAttributerList } from "../hooks";
 import { useAddProduct } from "../hooks/useProducts";
 import { productSchema, type ProductFormData } from "../schemas/productSchema";
+import { addSku } from "../services/productService";
 import { theme } from "../styles/theme";
 
 const AttributeRow = ({
@@ -205,7 +206,7 @@ const AddProduct = () => {
     return combinations.map((combo) => ({
       model: combo.join(" / "),
       price: "2000", // Default price
-      inStock: "100", // Default stock
+      numberInStock: "100", // Default stock
     }));
   }, [watchedAttributes]);
 
@@ -224,9 +225,39 @@ const AddProduct = () => {
     }
   `;
 
+  const [data, setData] = useState<
+    {
+      model: string;
+      price: string;
+      numberInStock: string;
+    }[]
+  >([]);
+
   const handleRemoveSKU = useCallback((index: number) => {
     setData((prevData) => prevData.filter((_, i) => i !== index));
   }, []);
+
+  const handleSkuFocus = useCallback(
+    async (index: number) => {
+      if (index > 0) {
+        // Send request to backend when focusing on second row or later
+        try {
+          const skuData = data[index];
+          if (skuData) {
+            await addSku({
+              model: skuData.model,
+              price: skuData.price,
+              numberInStock: skuData.numberInStock,
+            });
+            console.log(`SKU ${index} sent to backend`);
+          }
+        } catch (error) {
+          console.error("Error sending SKU to backend:", error);
+        }
+      }
+    },
+    [data]
+  );
 
   // Table configuration
   const columnHelper = createColumnHelper<(typeof generatedSKUs)[0]>();
@@ -244,33 +275,23 @@ const AddProduct = () => {
         header: "Price",
         cell: (info) => (
           <Input
-            type="number"
-            name={`skusIds.${info.row.index}.price`}
+            name={`skus.${info.row.index}.price`}
             control={control}
-            value={info.getValue()}
-            onChange={(e) => {
-              const newData = [...data];
-              newData[info.row.index].price = e.target.value;
-              setData(newData);
-            }}
+            type="number"
             fullWidth
+            onFocus={() => handleSkuFocus(info.row.index)}
           />
         ),
       }),
-      columnHelper.accessor("inStock", {
+      columnHelper.accessor("numberInStock", {
         header: "In Stock",
         cell: (info) => (
           <Input
-            type="number"
-            name={`skusIds.${info.row.index}.numberInStock`}
+            name={`skus.${info.row.index}.numberInStock`}
             control={control}
-            value={info.getValue()}
-            onChange={(e) => {
-              const newData = [...data];
-              newData[info.row.index].inStock = e.target.value;
-              setData(newData);
-            }}
+            type="number"
             fullWidth
+            onFocus={() => handleSkuFocus(info.row.index)}
           />
         ),
       }),
@@ -287,15 +308,8 @@ const AddProduct = () => {
         ),
       }),
     ],
-    [columnHelper, deleteIconStyles, handleRemoveSKU]
+    [columnHelper, deleteIconStyles, handleRemoveSKU, handleSkuFocus]
   );
-  const [data, setData] = useState<
-    {
-      model: string;
-      price: string;
-      inStock: string;
-    }[]
-  >([]);
   const skuTable = useReactTable({
     data: data || [],
     columns,

@@ -12,6 +12,7 @@ interface InputProps<T extends FieldValues = FieldValues>
   name: FieldPath<T>;
   control: Control<T>;
   fullWidth?: boolean;
+  onFocus?: () => void;
 }
 
 export const Input = <T extends FieldValues = FieldValues>({
@@ -19,6 +20,7 @@ export const Input = <T extends FieldValues = FieldValues>({
   control,
   fullWidth = false,
   className,
+  onFocus,
   ...props
 }: InputProps<T>) => {
   const { field } = useController({
@@ -47,7 +49,13 @@ export const Input = <T extends FieldValues = FieldValues>({
   `;
 
   return (
-    <input {...field} css={inputStyles} className={className} {...props} />
+    <input
+      {...field}
+      css={inputStyles}
+      className={className}
+      onFocus={onFocus}
+      {...props}
+    />
   );
 };
 

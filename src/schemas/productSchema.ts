@@ -11,22 +11,7 @@ export const productSchema = z.object({
       "Name can only contain letters, numbers, and spaces"
     ),
 
-  skusIds: z
-    .array(
-      z.object({
-        value: z
-          .string()
-          .min(1, "SKU ID is required")
-          .min(1, "SKU ID must be at least 1 character")
-          .max(50, "SKU ID must be less than 50 characters")
-          .regex(
-            /^[a-zA-Z0-9_-]+$/,
-            "SKU ID can only contain letters, numbers, underscores, and hyphens"
-          ),
-      })
-    )
-    .min(0, "SKU IDs are generated automatically")
-    .max(10, "Maximum 10 SKU IDs allowed"),
+  skusIds: z.array(z.string()).min(1, "At least one SKU is required"),
 
   attributes: z
     .array(
@@ -48,7 +33,15 @@ export const productSchema = z.object({
     )
     .min(1, "At least one attribute is required")
     .max(20, "Maximum 20 attributes allowed"),
-    
+  skus: z
+    .array(
+      z.object({
+        model: z.string().min(1, "Model is required"),
+        price: z.string().min(1, "Price is required"),
+        numberInStock: z.string().min(1, "Stock is required"),
+      })
+    )
+    .min(1, "At least one SKU is required"),
 });
 
 export type ProductFormData = z.infer<typeof productSchema>;

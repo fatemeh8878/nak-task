@@ -23,6 +23,13 @@ export interface ProductAttribute {
   values: string[];
 }
 
+export interface Sku {
+  id?: string;
+  model: string;
+  price: string;
+  numberInStock: string;
+}
+
 export interface Product extends Record<string, unknown> {
   id?: string;
   name: string;
@@ -37,11 +44,20 @@ export const getProductList = async (
   return response.data;
 };
 
+export const addSku = async (sku: Omit<Sku, "id">): Promise<Sku> => {
+  const response = await api.post("/skus", sku);
+  return response.data;
+};
+
 export const addProduct = async (
   product: Omit<Product, "id">
 ): Promise<Product> => {
-  const response = await api.post("/products", product);
-  return response.data;
+  const productResponse = await api.post("/products", {
+    name: product.name,
+    attributes: product.attributes,
+  });
+
+  return productResponse.data;
 };
 
 export const updateProduct = async (
