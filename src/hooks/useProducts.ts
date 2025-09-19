@@ -1,14 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addProduct,
-  addSku,
   deleteProduct,
   getProductList,
   updateProduct,
   type PaginationParams,
   type Product,
   type ProductResponse,
-  type Sku,
 } from "../services/productService";
 
 export const useProductList = (params?: PaginationParams) =>
@@ -20,12 +18,6 @@ export const useProductList = (params?: PaginationParams) =>
 export const useAddProduct = () => {
   return useMutation<Product, Error, Product, { onSuccess: () => void }>({
     mutationFn: addProduct,
-  });
-};
-
-export const useAddSku = () => {
-  return useMutation<Sku, Error, Sku>({
-    mutationFn: addSku,
   });
 };
 

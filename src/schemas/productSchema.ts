@@ -11,8 +11,6 @@ export const productSchema = z.object({
       "Name can only contain letters, numbers, and spaces"
     ),
 
-  skusIds: z.array(z.string()).min(1, "At least one SKU is required"),
-
   attributes: z
     .array(
       z.object({
@@ -31,7 +29,7 @@ export const productSchema = z.object({
           .max(10, "Maximum 10 attribute values allowed"),
       })
     )
-    .min(1, "At least one attribute is required")
+    .min(0, "Attributes are optional")
     .max(20, "Maximum 20 attributes allowed"),
   skus: z
     .array(
