@@ -64,4 +64,73 @@ export const styles = {
       color: ${theme.colors.error[600]};
     }
   `,
+  modalOverlay: css`
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000000;
+  `,
+  modalContent: css`
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+
+    modalText {
+      font-size: 20px;
+      margin: 0 0 16px 0;
+    }
+  `,
+  modalText: css`
+    margin: 0 0 24px 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: ${theme.colors.text.black};
+    }
+
+    modalText {
+      margin: 0 0 24px 0;
+      color: ${theme.colors.text.gray[600]};
+    }
+  `,
+  modalButtons: css`
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+    justify-content: center;
+  `,
+  cancelButton: css`
+    padding: 8px 16px;
+    border: 1px solid ${theme.colors.gray[300]};
+    background: white;
+    color: ${theme.colors.text.gray[700]};
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: ${theme.typography.fontSize.sm};
+
+    &:hover {
+      background: ${theme.colors.gray[50]};
+    }
+  `,
+  confirmButton: css`
+    padding: 8px 16px;
+    border: none;
+    background: ${theme.colors.error[500]};
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: ${theme.typography.fontSize.sm};
+
+    &:hover {
+      background: ${theme.colors.error[600]};
+    }
+  `,
 };

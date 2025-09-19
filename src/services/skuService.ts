@@ -16,3 +16,12 @@ export const getSkuList = async (): Promise<Sku[]> => {
   const response = await api.get("/skus");
   return response.data;
 };
+export const getSkuDetail = async (id?: string): Promise<Sku> => {
+  const response = await api.get(`/skus/${id || ""}`);
+  return response.data;
+};
+
+export const updateSku = async (id: string, sku: Sku): Promise<Sku> => {
+  const response = await api.patch(`/skus/${id}`, sku);
+  return response.data;
+};

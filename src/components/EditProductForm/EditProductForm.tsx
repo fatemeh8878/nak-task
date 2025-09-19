@@ -1,36 +1,41 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAttributerList } from "../../hooks";
-import { useAddProduct } from "../../hooks/useProducts";
-import { useAddSku } from "../../hooks/useSku";
+import { useProductDetail, useUpdateProduct } from "../../hooks/useProducts";
+import { useAddSku, useSkuDetail } from "../../hooks/useSku";
 import {
   productSchema,
   type ProductFormData,
 } from "../../schemas/productSchema";
+import { AttributeRow } from "../AddProductForm/AttributeRow";
+import { SkuTable } from "../AddProductForm/SkuTable";
+import { useSkuGeneration } from "../AddProductForm/hooks";
+import { styles } from "../AddProductForm/styles";
+import { type SkuData } from "../AddProductForm/types";
 import { Button } from "../ui/Button";
 import { ControlledInput } from "../ui/ControlledInput";
-import { AttributeRow } from "./AttributeRow";
-import { SkuTable } from "./SkuTable";
-import { useSkuGeneration } from "./hooks";
-import { styles } from "./styles";
-import { type SkuData } from "./types";
 
-export const AddProductForm = () => {
+export const EditProductForm = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const [skuData, setSkuData] = useState<SkuData[]>([]);
-  const { mutate: addProduct, isPending } = useAddProduct();
+  const { mutate: updateProduct, isPending } = useUpdateProduct();
   const { mutateAsync: addSku, isPending: isSkuPending } = useAddSku();
-  const { control, handleSubmit, watch, setValue } = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema),
-    defaultValues: {
-      name: "",
-      attributes: [{ name: "", values: [] }],
-      skus: [],
-      skusIds: undefined,
-    },
-  });
+  const { data: productDetail, isLoading: isLoadingProduct } = useProductDetail(
+    id || ""
+  );
+  const { control, handleSubmit, watch, setValue, reset } =
+    useForm<ProductFormData>({
+      resolver: zodResolver(productSchema),
+      defaultValues: {
+        name: "",
+        attributes: [{ name: "", values: [] }],
+        skus: [],
+        skusIds: undefined,
+      },
+    });
 
   const { data: attributeList } = useAttributerList();
   const watchedAttributes = watch("attributes");
@@ -61,13 +66,61 @@ export const AddProductForm = () => {
     control,
     name: "attributes",
   });
-
+  const [skuId, setSkuId] = useState<string | undefined>(undefined);
+  const { data } = useSkuDetail(skuId);
   const generatedSKUs = useSkuGeneration(watchedAttributes);
 
   useEffect(() => {
-    setSkuData(generatedSKUs);
-    setValue("skus", [...(generatedSKUs || [])]);
-  }, [generatedSKUs]);
+    if (generatedSKUs) {
+      setSkuData((prev) => {
+        const newSkus = generatedSKUs.map((sku) => ({
+          model: sku.model,
+          price: prev.find((p) => p.model === sku.model)?.price || "",
+          numberInStock:
+            prev.find((p) => p.model === sku.model)?.numberInStock || "",
+        }));
+        setValue("skus", [...(newSkus || [])]);
+        return newSkus;
+      });
+    }
+  }, [generatedSKUs, setValue]);
+
+  useEffect(() => {
+    if (productDetail) {
+      const attributes =
+        productDetail.attributes && productDetail.attributes.length > 0
+          ? productDetail.attributes.map((attr) => ({
+              name: attr.name,
+              values: attr.values,
+            }))
+          : [{ name: "", values: [] }];
+
+      productDetail.skus?.forEach((skuId: string) => {
+        setSkuId(skuId);
+      });
+
+      const skus = data
+        ? [
+            {
+              model: data.model,
+              price: data.price,
+              numberInStock: data.numberInStock,
+            },
+          ]
+        : [];
+
+      reset({
+        name: productDetail.name || "",
+        attributes: [...attributes, { name: "", values: [] }],
+        skus,
+        skusIds: productDetail.skusIds,
+      });
+
+      if (skus.length > 0) {
+        setSkuData(skus);
+      }
+    }
+  }, [productDetail, data, reset]);
 
   const handleRemoveSku = useCallback(
     (index: number) => {
@@ -94,30 +147,32 @@ export const AddProductForm = () => {
   );
 
   const onSubmit = handleSubmit(async (formData) => {
-    const createdSkuIds: string[] = [];
+    const skuIds = productDetail?.skusIds || [];
 
-    for (const sku of generatedSKUs) {
+    for (const sku of formData.skus) {
       if (sku.price && sku.numberInStock) {
         const createdSku = await addSku({
           model: sku.model,
           price: sku.price,
           numberInStock: sku.numberInStock,
         });
-        createdSkuIds.push(createdSku._id || "");
+        skuIds.push(createdSku._id || "");
       }
     }
 
-    addProduct(
+    updateProduct(
       {
-        name: formData.name,
-        skusIds: createdSkuIds.map((id) => id),
-
-        attributes: formData.attributes
-          .filter((attr) => attr.name && attr.name.trim() !== "")
-          .map((attr) => ({
-            name: attr.name,
-            values: attr.values || [],
-          })),
+        id: id || "",
+        product: {
+          name: formData.name,
+          skusIds: skuIds,
+          attributes: formData.attributes
+            .filter((attr) => attr.name && attr.name.trim() !== "")
+            .map((attr) => ({
+              name: attr.name,
+              values: attr.values || [],
+            })),
+        },
       },
       {
         onSuccess: () => {
@@ -127,9 +182,18 @@ export const AddProductForm = () => {
     );
   });
 
+  if (isLoadingProduct) {
+    return (
+      <div css={styles.container}>
+        <h1 css={styles.title}>Edit Product</h1>
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div css={styles.container}>
-      <h1 css={styles.title}>Product</h1>
+      <h1 css={styles.title}>Edit Product</h1>
       <form onSubmit={onSubmit} css={styles.formContainer}>
         <div css={styles.formContent}>
           <div css={styles.formGroup}>
@@ -183,7 +247,7 @@ export const AddProductForm = () => {
             loading={isPending || isSkuPending}
             size="md"
           >
-            Create
+            Update
           </Button>
         </div>
       </form>

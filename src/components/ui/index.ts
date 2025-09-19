@@ -3,6 +3,7 @@ export { Card } from "./Card";
 export { ControlledInput } from "./ControlledInput";
 export { Input } from "./Input";
 export { LanguageSwitcher } from "./LanguageSwitcher";
+export { Modal } from "./Modal";
 export { MultiSelectInput } from "./MultiSelectInput";
 export { Pagination } from "./Pagination";
 export { SelectInput } from "./SelectInput";

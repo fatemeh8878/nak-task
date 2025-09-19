@@ -3,7 +3,13 @@ import React from "react";
 import { theme } from "../../styles/theme";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "black" | "white" | "iconButton";
+  variant?:
+    | "black"
+    | "white"
+    | "iconButton"
+    | "error"
+    | "outline"
+    | "outlineError";
   size?: "sm" | "md" | "xs";
   fullWidth?: boolean;
   loading?: boolean;
@@ -52,6 +58,51 @@ const buttonVariants = {
     &:active:not(:disabled) {
       border: 1px solid #000000;
       background-color: white;
+    }
+  `,
+  error: css`
+    background-color: ${theme.colors.error[500]};
+    color: white;
+    border: none;
+
+    &:hover:not(:disabled) {
+      background-color: ${theme.colors.error[600]};
+    }
+
+    &:active:not(:disabled) {
+      background-color: ${theme.colors.error[700]};
+    }
+  `,
+  outline: css`
+    background-color: transparent;
+    color: ${theme.colors.text.black};
+    border: 1px solid ${theme.colors.gray[300]};
+
+    &:hover:not(:disabled) {
+      background-color: ${theme.colors.gray[50]};
+      border-color: ${theme.colors.gray[400]};
+    }
+
+    &:active:not(:disabled) {
+      background-color: ${theme.colors.gray[100]};
+      border-color: ${theme.colors.gray[500]};
+    }
+  `,
+  outlineError: css`
+    background-color: transparent;
+    color: ${theme.colors.error[500]};
+    border: 1px solid ${theme.colors.error[500]};
+
+    &:hover:not(:disabled) {
+      background-color: ${theme.colors.error[50]};
+      border-color: ${theme.colors.error[600]};
+      color: ${theme.colors.error[600]};
+    }
+
+    &:active:not(:disabled) {
+      background-color: ${theme.colors.error[100]};
+      border-color: ${theme.colors.error[700]};
+      color: ${theme.colors.error[700]};
     }
   `,
 };

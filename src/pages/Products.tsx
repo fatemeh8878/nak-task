@@ -7,9 +7,10 @@ import {
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Button, Pagination } from "../components/ui";
+import { Button, Modal, Pagination } from "../components/ui";
+import { EditIcon, TrashIcon } from "../components/ui/icons";
 import { Table } from "../components/ui/Table";
-import { useProductList } from "../hooks/useProducts";
+import { useDeleteProduct, useProductList } from "../hooks/useProducts";
 import { type Product } from "../services/productService";
 import { theme } from "../styles/theme";
 
@@ -20,26 +21,17 @@ const Products = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
   const { data: productResponse } = useProductList({
-    page: currentPage,
     perPage,
+    page: currentPage,
   });
 
-  const paginationMeta = productResponse?.meta;
+  const { mutate, isPending } = useDeleteProduct();
 
-  // Add an empty row at the end of the list
-  const tableData = useMemo(() => {
-    const productList = productResponse?.data || [];
-    return [
-      ...productList,
-      {
-        name: "...",
-        skusIds: ["...."],
-        attributes: [{ name: "....", values: ["...."] }],
-      },
-    ];
-  }, [productResponse?.data]);
+  const paginationMeta = productResponse?.meta;
 
   const columns = useMemo(
     () => [
@@ -52,25 +44,44 @@ const Products = () => {
         header: t("name"),
         cell: (info) => info.getValue(),
       }),
-      columnHelper.accessor("skusIds", {
-        header: "SKU IDs",
-        cell: (info) => info.getValue().join(", ") || "",
+      columnHelper.accessor("countOfSkus", {
+        header: "Count of SKUs",
+        cell: (info) => info.row.original.skus?.length || 0,
       }),
-      columnHelper.accessor("attributes", {
-        header: "Attributes",
-        cell: (info) => {
-          const attributes = info.getValue();
-          return attributes
-            .map((attr) => `${attr.name}: ${attr.values.join(", ")}`)
-            .join(" | ");
-        },
+      columnHelper.accessor("action", {
+        header: "",
+        cell: (info) => (
+          <div
+            style={{
+              display: "flex",
+              gap: 8,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() =>
+                navigate(`/products/${info.row.original._id}/edit`)
+              }
+            >
+              <EditIcon width={16} height={16} color="gray" />
+            </div>
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => handleDeleteClick(info.row.original)}
+            >
+              <TrashIcon width={16} height={16} color="gray" />
+            </div>
+          </div>
+        ),
       }),
     ],
     [t]
   );
 
   const table = useReactTable({
-    data: tableData,
+    data: productResponse?.items || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -81,6 +92,25 @@ const Products = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleDeleteClick = (product: Product) => {
+    setProductToDelete(product);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    mutate(productToDelete?._id as string, {
+      onSuccess: () => {
+        setDeleteModalOpen(false);
+        setProductToDelete(null);
+      },
+    });
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setProductToDelete(null);
   };
 
   const containerStyles = css`
@@ -112,9 +142,9 @@ const Products = () => {
   return (
     <div css={containerStyles}>
       <div css={headerStyles}>
-        <h1 css={titleStyles}>Products</h1>
+        <h1 css={titleStyles}>{t("products")}</h1>
         <Button onClick={handleAddProduct} variant="black">
-          Add Product +
+          {t("addProduct")} +
         </Button>
       </div>
 
@@ -135,6 +165,17 @@ const Products = () => {
           perPage={paginationMeta.perPage}
         />
       )}
+
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        confirmText={t("yes")}
+        cancelText={t("no")}
+        isLoading={isPending}
+      >
+        {t("deleteProductConfirm", { name: productToDelete?.name })}
+      </Modal>
     </div>
   );
 };

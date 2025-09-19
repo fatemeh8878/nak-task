@@ -5,6 +5,7 @@ import { AdminLayout } from "../components/layout/AdminLayout";
 import AddAttribute from "../pages/AddAttribute";
 import AddProduct from "../pages/AddProduct";
 import Attributes from "../pages/Attributes";
+import EditProduct from "../pages/EditProduct";
 import Home from "../pages/Home";
 import Products from "../pages/Products";
 
@@ -18,6 +19,7 @@ const appRoutes: RouteObject[] = [
       { path: "attributes/add", element: <AddAttribute /> },
       { path: "products", element: <Products /> },
       { path: "products/add", element: <AddProduct /> },
+      { path: "products/:id/edit", element: <EditProduct /> },
     ],
   },
   {

@@ -46,6 +46,17 @@ export const Input = <T extends FieldValues = FieldValues>({
       color: #6b7280;
       cursor: not-allowed;
     }
+
+    /* Remove number input spinners */
+    &[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    &[type="number"]::-webkit-outer-spin-button,
+    &[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
   `;
 
   return (

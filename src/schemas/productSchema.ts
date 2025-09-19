@@ -11,21 +11,22 @@ export const productSchema = z.object({
       "Name can only contain letters, numbers, and spaces"
     ),
 
+  skusIds: z.optional(z.array(z.string())),
+
   attributes: z
     .array(
       z.object({
         name: z
           .string()
-          .min(1, "Attribute name is required")
-          .min(2, "Attribute name must be at least 2 characters")
+          .min(0, "Attribute name is optional")
           .max(50, "Attribute name must be less than 50 characters")
           .regex(
-            /^[a-zA-Z0-9\s]+$/,
+            /^[a-zA-Z0-9\s]*$/,
             "Attribute name can only contain letters, numbers, and spaces"
           ),
         values: z
           .array(z.string())
-          .min(1, "At least one attribute value is required")
+          .min(0, "Attribute values are optional")
           .max(10, "Maximum 10 attribute values allowed"),
       })
     )

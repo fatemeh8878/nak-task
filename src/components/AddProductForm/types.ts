@@ -15,4 +15,5 @@ export interface AttributeRowProps {
   handleAddAttribute: () => void;
   isLast: boolean;
   setValue: UseFormSetValue<ProductFormData>;
+  allAttributes?: Array<{ name: string; values: string[] }>;
 }

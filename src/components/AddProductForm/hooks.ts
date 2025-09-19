@@ -28,8 +28,8 @@ export const useSkuGeneration = (
 
     return combinations.map((combo: string[]) => ({
       model: combo.join(" / "),
-      price: "2000",
-      numberInStock: "100",
+      price: "",
+      numberInStock: "",
     }));
   }, [watchedAttributes]);
 };

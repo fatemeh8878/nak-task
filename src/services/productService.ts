@@ -14,7 +14,7 @@ export interface PaginationMeta {
 }
 
 export interface ProductResponse {
-  data: Product[];
+  items: Product[];
   meta: PaginationMeta;
 }
 
@@ -25,7 +25,8 @@ export interface ProductAttribute {
 
 export interface Product extends Record<string, unknown> {
   name: string;
-  skusIds: string[];
+  skus?: string[];
+  skusIds?: string[];
   attributes: ProductAttribute[];
 }
 
@@ -39,10 +40,7 @@ export const getProductList = async (
 export const addProduct = async (
   product: Omit<Product, "id">
 ): Promise<Product> => {
-  const productResponse = await api.post("/products", {
-    name: product.name,
-    attributes: product.attributes,
-  });
+  const productResponse = await api.post("/products", product);
 
   return productResponse.data;
 };
@@ -51,10 +49,15 @@ export const updateProduct = async (
   id: string,
   product: Partial<Product>
 ): Promise<Product> => {
-  const response = await api.put(`/products/${id}`, product);
+  const response = await api.patch(`/products/${id}`, product);
   return response.data;
 };
 
 export const deleteProduct = async (id: string): Promise<void> => {
   await api.delete(`/products/${id}`);
+};
+
+export const getProductDetail = async (id: string): Promise<Product> => {
+  const response = await api.get(`/products/${id}`);
+  return response.data;
 };

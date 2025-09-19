@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addProduct,
   deleteProduct,
+  getProductDetail,
   getProductList,
   updateProduct,
   type PaginationParams,
@@ -15,8 +16,16 @@ export const useProductList = (params?: PaginationParams) =>
     queryFn: () => getProductList(params),
   });
 
+export const useProductDetail = (id: string) => {
+  return useQuery<Product, Error, Product>({
+    queryKey: ["productDetail", id],
+    queryFn: () => getProductDetail(id),
+    enabled: !!id,
+  });
+};
+
 export const useAddProduct = () => {
-  return useMutation<Product, Error, Product, { onSuccess: () => void }>({
+  return useMutation<Product, Error, Product>({
     mutationFn: addProduct,
   });
 };

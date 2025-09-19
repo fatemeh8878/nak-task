@@ -49,9 +49,7 @@ export const MultiSelectInput = <T extends FieldValues>({
     name,
     control,
   });
-
   const selectedValues: string[] = field.value || [];
-
   const handleToggleOption = (optionValue: string) => {
     const newValues = selectedValues.includes(optionValue)
       ? selectedValues.filter((val: string) => val !== optionValue)

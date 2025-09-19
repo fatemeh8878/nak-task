@@ -1,7 +1,8 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useAttributeDetails } from "../../hooks";
-import { MultiSelectInput, SelectInput } from "../ui";
+import { Modal, MultiSelectInput, SelectInput } from "../ui";
 import { Button } from "../ui/Button";
 import { styles } from "./styles";
 import { type AttributeRowProps } from "./types";
@@ -14,17 +15,25 @@ export const AttributeRow = ({
   handleAddAttribute,
   isLast,
   setValue,
+  allAttributes = [],
 }: AttributeRowProps) => {
+  const { t } = useTranslation();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const selectedAttributeId = useWatch({
     control,
     name: `attributes.${attributeIndex}.name`,
   });
 
+  // Only clear values when attribute changes, not when it's initially set
   useEffect(() => {
-    if (selectedAttributeId) {
+    // Check if this is a new attribute selection (not initial load)
+    const currentValues =
+      control._formValues?.attributes?.[attributeIndex]?.values;
+    if (selectedAttributeId && (!currentValues || currentValues.length === 0)) {
       setValue(`attributes.${attributeIndex}.values`, []);
     }
-  }, [selectedAttributeId, setValue, attributeIndex]);
+  }, [selectedAttributeId, setValue, attributeIndex, control]);
 
   const { data: attributeDetails } = useAttributeDetails(
     selectedAttributeId || ""
@@ -34,11 +43,32 @@ export const AttributeRow = ({
     if (!attributeDetails?.values || !Array.isArray(attributeDetails.values)) {
       return [];
     }
-    return attributeDetails.values.map((val: string) => ({
-      label: val,
-      value: val,
-    }));
-  }, [attributeDetails?.values]);
+
+    // Get all selected values from all attributes except current one
+    const selectedValues = allAttributes
+      .filter((_, index) => index !== attributeIndex)
+      .flatMap((attr) => attr.values || []);
+
+    return attributeDetails.values
+      .filter((val: string) => !selectedValues.includes(val))
+      .map((val: string) => ({
+        label: val,
+        value: val,
+      }));
+  }, [attributeDetails?.values, allAttributes, attributeIndex]);
+
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    onRemove();
+    setShowDeleteModal(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+  };
 
   return (
     <div css={styles.attributeRow}>
@@ -66,7 +96,13 @@ export const AttributeRow = ({
         />
       </div>
       {isLast && (
-        <Button type="button" variant="white" onClick={handleAddAttribute}>
+        <Button
+          type="button"
+          variant="white"
+          onClick={handleAddAttribute}
+          size="sm"
+          disabled={!selectedAttributeId || selectedAttributeId.trim() === ""}
+        >
           Add
         </Button>
       )}
@@ -75,11 +111,21 @@ export const AttributeRow = ({
           type="button"
           variant="iconButton"
           css={styles.deleteIcon}
-          onClick={onRemove}
+          onClick={handleDeleteClick}
         >
-          شسی
+          🗑️
         </Button>
       )}
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        confirmText={t("yes")}
+        cancelText={t("no")}
+      >
+        {t("deleteAttributeConfirm", { name: attributeDetails?.name })}
+      </Modal>
     </div>
   );
 };

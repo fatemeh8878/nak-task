@@ -3,10 +3,11 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { type Control } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { type ProductFormData } from "../../schemas/productSchema";
-import { Input, Table } from "../ui";
+import { Button, Input, Table } from "../ui";
 import { styles } from "./styles";
 import { type SkuData } from "./types";
 
@@ -17,7 +18,28 @@ interface SkuTableProps {
 }
 
 export const SkuTable = ({ data, control, onRemoveSku }: SkuTableProps) => {
+  const { t } = useTranslation();
+  const [showModal, setShowModal] = useState(false);
+  const [skuToDelete, setSkuToDelete] = useState<number | null>(null);
   const columnHelper = createColumnHelper<SkuData>();
+
+  const handleDeleteClick = (index: number) => {
+    setSkuToDelete(index);
+    setShowModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (skuToDelete !== null) {
+      onRemoveSku(skuToDelete);
+      setShowModal(false);
+      setSkuToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowModal(false);
+    setSkuToDelete(null);
+  };
   const columns = useMemo(
     () => [
       columnHelper.display({
@@ -56,14 +78,14 @@ export const SkuTable = ({ data, control, onRemoveSku }: SkuTableProps) => {
         cell: (info) => (
           <span
             css={styles.deleteIcon}
-            onClick={() => onRemoveSku(info.row.index)}
+            onClick={() => handleDeleteClick(info.row.index)}
           >
             🗑️
           </span>
         ),
       }),
     ],
-    [columnHelper, control, onRemoveSku]
+    [columnHelper, control]
   );
 
   const table = useReactTable({
@@ -73,10 +95,36 @@ export const SkuTable = ({ data, control, onRemoveSku }: SkuTableProps) => {
   });
 
   return (
-    <Table<SkuData>
-      table={table}
-      emptyMessage="Add attributes to generate SKUs"
-      variant="rounded"
-    />
+    <>
+      <Table<SkuData>
+        table={table}
+        emptyMessage="Add attributes to generate SKUs"
+        variant="rounded"
+      />
+
+      {showModal && (
+        <div css={styles.modalOverlay}>
+          <div css={styles.modalContent}>
+            <p css={styles.modalText}>
+              {t("deleteSkuConfirm", {
+                model: data?.[skuToDelete || 0]?.model || "",
+              })}
+            </p>
+            <div css={styles.modalButtons}>
+              <Button
+                variant="outlineError"
+                onClick={handleCancelDelete}
+                size="sm"
+              >
+                {t("cancel")}
+              </Button>
+              <Button variant="error" onClick={handleConfirmDelete} size="sm">
+                {t("delete")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
