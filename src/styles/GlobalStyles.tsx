@@ -1,4 +1,5 @@
 import { css, Global } from "@emotion/react";
+import "./fonts.css";
 import { theme } from "./theme";
 
 export const GlobalStyles = () => (
@@ -8,6 +9,7 @@ export const GlobalStyles = () => (
         box-sizing: border-box;
         margin: 0;
         padding: 0;
+        font-family: Inter;
       }
 
       html {
@@ -16,7 +18,7 @@ export const GlobalStyles = () => (
       }
 
       body {
-        font-family: ${theme.typography.fontFamily.sans.join(", ")};
+        font-family: Inter;
         font-size: ${theme.typography.fontSize.base};
         font-weight: ${theme.typography.fontWeight.normal};
         line-height: ${theme.typography.lineHeight.normal};

@@ -4,7 +4,12 @@ import type { Control, FieldPath, FieldValues } from "react-hook-form";
 import { useController } from "react-hook-form";
 import { theme } from "../../styles/theme";
 
-interface ControlledInputProps<T extends FieldValues> {
+interface SelectOption {
+  value: string;
+  label: string;
+}
+
+interface SelectInputProps<T extends FieldValues> {
   name: FieldPath<T>;
   control: Control<T>;
   label?: string;
@@ -12,10 +17,11 @@ interface ControlledInputProps<T extends FieldValues> {
   fullWidth?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  options: SelectOption[];
   variant?: "default" | "rounded";
 }
 
-export const ControlledInput = <T extends FieldValues>({
+export const SelectInput = <T extends FieldValues>({
   name,
   control,
   label,
@@ -23,8 +29,9 @@ export const ControlledInput = <T extends FieldValues>({
   fullWidth = false,
   leftIcon,
   rightIcon,
+  options,
   variant = "default",
-}: ControlledInputProps<T>) => {
+}: SelectInputProps<T>) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const {
@@ -38,7 +45,7 @@ export const ControlledInput = <T extends FieldValues>({
   const hasValue = field.value && field.value.toString().length > 0;
   const isLabelFloating = isFocused || hasValue;
 
-  const baseInputStyles = css`
+  const baseSelectStyles = css`
     width: ${fullWidth ? "100%" : "auto"};
     font-size: 16px;
     font-weight: 400;
@@ -47,16 +54,18 @@ export const ControlledInput = <T extends FieldValues>({
     color: #000000;
     transition: all 0.2s ease;
     outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
 
     &:disabled {
       background-color: #00000005 !important;
       color: #000000;
       cursor: not-allowed;
       border-color: #000000;
-    }
-
-    &::placeholder {
-      color: transparent;
     }
 
     ${leftIcon &&
@@ -70,8 +79,8 @@ export const ControlledInput = <T extends FieldValues>({
     `}
   `;
 
-  const inputStyles = css`
-    ${baseInputStyles}
+  const selectStyles = css`
+    ${baseSelectStyles}
     ${variant === "default" &&
     css`
       padding: 23px;
@@ -123,7 +132,7 @@ export const ControlledInput = <T extends FieldValues>({
     border-radius: 4px;
   `;
 
-  const inputContainerStyles = css`
+  const selectContainerStyles = css`
     position: relative;
     display: flex;
     align-items: center;
@@ -159,15 +168,28 @@ export const ControlledInput = <T extends FieldValues>({
   return (
     <div css={containerStyles}>
       {label && <label css={labelStyles}>{label}</label>}
-      <div css={inputContainerStyles}>
+      <div css={selectContainerStyles}>
         {leftIcon && <div css={leftIconStyles}>{leftIcon}</div>}
-        <input
+        <select
           {...field}
-          css={inputStyles}
-          placeholder={isLabelFloating ? placeholder : ""}
+          css={selectStyles}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-        />
+          onChange={(e) => {
+            field.onChange(e.target.value);
+          }}
+        >
+          {placeholder && (
+            <option value="" disabled>
+              {placeholder}
+            </option>
+          )}
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
         {rightIcon && <div css={rightIconStyles}>{rightIcon}</div>}
       </div>
       <span css={errorStyles}>{error ? error?.message : " "}</span>

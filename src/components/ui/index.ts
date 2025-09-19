@@ -1,4 +1,9 @@
 export { Button } from "./Button";
 export { Card } from "./Card";
+export { ControlledInput } from "./ControlledInput";
 export { Input } from "./Input";
 export { LanguageSwitcher } from "./LanguageSwitcher";
+export { MultiSelectInput } from "./MultiSelectInput";
+export { Pagination } from "./Pagination";
+export { SelectInput } from "./SelectInput";
+export { Table } from "./Table";

@@ -3,109 +3,85 @@ import React from "react";
 import { theme } from "../../styles/theme";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
-  size?: "sm" | "md" | "lg";
+  variant?: "black" | "white" | "iconButton";
+  size?: "sm" | "md" | "xs";
   fullWidth?: boolean;
   loading?: boolean;
   children: React.ReactNode;
 }
 
 const buttonVariants = {
-  primary: css`
-    background-color: ${theme.colors.primary[600]};
+  black: css`
+    background-color: #000000;
     color: white;
-    border: 1px solid ${theme.colors.primary[600]};
+    border: none;
 
     &:hover:not(:disabled) {
-      background-color: ${theme.colors.primary[700]};
-      border-color: ${theme.colors.primary[700]};
+      background-color: #000000;
     }
 
     &:active:not(:disabled) {
-      background-color: ${theme.colors.primary[800]};
-      border-color: ${theme.colors.primary[800]};
+      background-color: #000000;
     }
   `,
-  secondary: css`
-    background-color: ${theme.colors.gray[100]};
-    color: ${theme.colors.gray[900]};
-    border: 1px solid ${theme.colors.gray[300]};
-
-    &:hover:not(:disabled) {
-      background-color: ${theme.colors.gray[200]};
-      border-color: ${theme.colors.gray[400]};
-    }
-
-    &:active:not(:disabled) {
-      background-color: ${theme.colors.gray[300]};
-      border-color: ${theme.colors.gray[500]};
-    }
-  `,
-  outline: css`
+  white: css`
     background-color: transparent;
-    color: ${theme.colors.primary[600]};
-    border: 1px solid ${theme.colors.primary[600]};
+    color: #000000;
+    border: 1px solid #000000;
 
     &:hover:not(:disabled) {
-      background-color: ${theme.colors.primary[50]};
+      border: 1px solid #000000;
+      background-color: white;
     }
 
     &:active:not(:disabled) {
-      background-color: ${theme.colors.primary[100]};
+      border: 1px solid #000000;
+      background-color: white;
     }
   `,
-  ghost: css`
+  iconButton: css`
     background-color: transparent;
-    color: ${theme.colors.gray[600]};
-    border: 1px solid transparent;
-
+    color: #000000;
+    border: 1px solid #000000;
+    border-radius: 50%;
     &:hover:not(:disabled) {
-      background-color: ${theme.colors.gray[100]};
-      color: ${theme.colors.gray[900]};
+      border: 1px solid #000000;
+      background-color: white;
     }
 
     &:active:not(:disabled) {
-      background-color: ${theme.colors.gray[200]};
-    }
-  `,
-  danger: css`
-    background-color: ${theme.colors.error[600]};
-    color: white;
-    border: 1px solid ${theme.colors.error[600]};
-
-    &:hover:not(:disabled) {
-      background-color: ${theme.colors.error[700]};
-      border-color: ${theme.colors.error[700]};
-    }
-
-    &:active:not(:disabled) {
-      background-color: ${theme.colors.error[800]};
-      border-color: ${theme.colors.error[800]};
+      border: 1px solid #000000;
+      background-color: white;
     }
   `,
 };
 
 const buttonSizes = {
   sm: css`
-    padding: ${theme.spacing.sm} ${theme.spacing.md};
-    font-size: ${theme.typography.fontSize.sm};
-    border-radius: ${theme.borderRadius.sm};
+    height: 40px;
+    padding: 0 ${theme.spacing.lg};
+    font-size: ${theme.typography.fontSize.base};
+    border-radius: 40px;
   `,
   md: css`
-    padding: ${theme.spacing.md} ${theme.spacing.lg};
-    font-size: ${theme.typography.fontSize.base};
-    border-radius: ${theme.borderRadius.md};
+    height: 55px;
+    padding: 0;
+    font-size: 20px;
+    width: 200px;
+    border-radius: 50px;
   `,
-  lg: css`
-    padding: ${theme.spacing.lg} ${theme.spacing.xl};
-    font-size: ${theme.typography.fontSize.lg};
-    border-radius: ${theme.borderRadius.md};
+  xs: css`
+    height: 50px;
+    width: 50px;
+    padding: 0;
+    font-size: 20px;
+    border-radius: 50%;
   `,
 };
 
 export const Button: React.FC<ButtonProps> = ({
-  variant = "primary",
-  size = "md",
+  variant = "black",
+  size = "sm",
   fullWidth = false,
   loading = false,
   disabled,

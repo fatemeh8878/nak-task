@@ -1,29 +1,38 @@
 import { css } from "@emotion/react";
-import React, { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React from "react";
 import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
-import { Button, Card, Input } from "../components/ui";
-import type { LoginCredentials } from "../features/auth/types/auth.types";
+import { useNavigate } from "react-router-dom";
+import { Button } from "../components/ui";
+import { ControlledInput } from "../components/ui/ControlledInput";
+import { useLoginMutation } from "../hooks/useAuth";
+import { loginSchema, type LoginFormData } from "../schemas/authSchema";
 import { useAuthStore } from "../stores/authStore";
 import { theme } from "../styles/theme";
 
 const Login: React.FC = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isLoading, error } = useAuthStore();
-  const [showPassword, setShowPassword] = useState(false);
-
-  const { handleSubmit } = useForm<LoginCredentials>();
+  const { mutate, isPending, error } = useLoginMutation();
+  const { setAuth } = useAuthStore();
+  const { control, handleSubmit } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    values: {
+      userName: "",
+      password: "",
+    },
+  });
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
-
-    navigate("/dashboard");
+    mutate(data, {
+      onSuccess: (response) => {
+        setAuth(response.access_token, data.userName);
+        navigate("/dashboard");
+      },
+    });
   });
 
   const containerStyles = css`
-    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -32,163 +41,119 @@ const Login: React.FC = () => {
       ${theme.colors.primary[50]} 0%,
       ${theme.colors.gray[50]} 100%
     );
-    padding: ${theme.spacing.lg};
   `;
 
   const cardStyles = css`
-    width: 100%;
-    max-width: 400px;
-  `;
-
-  const headerStyles = css`
-    text-align: center;
-    margin-bottom: ${theme.spacing["2xl"]};
+    width: 40%;
+    padding: 40px;
+    border-radius: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: white;
   `;
 
   const titleStyles = css`
-    font-size: ${theme.typography.fontSize["3xl"]};
-    font-weight: ${theme.typography.fontWeight.bold};
-    color: ${theme.colors.gray[900]};
-    margin: 0 0 ${theme.spacing.sm} 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: ${theme.spacing.md};
-  `;
-
-  const subtitleStyles = css`
-    font-size: ${theme.typography.fontSize.lg};
-    color: ${theme.colors.gray[600]};
-    margin: 0;
+    font-size: 30px;
+    font-weight: 800;
+    margin-bottom: 40px;
+    color: #000000;
   `;
 
   const formStyles = css`
     display: flex;
     flex-direction: column;
+    gap: 24px;
+  `;
+
+  const inputContainerStyles = css`
+    display: flex;
+    flex-direction: column;
     gap: ${theme.spacing.lg};
   `;
 
-  const errorAlertStyles = css`
-    padding: ${theme.spacing.md};
-    background-color: ${theme.colors.error[50]};
-    border: 1px solid ${theme.colors.error[200]};
-    border-radius: ${theme.borderRadius.md};
-    color: ${theme.colors.error[700]};
-    font-size: ${theme.typography.fontSize.sm};
+  const buttonContainerStyles = css`
+    display: flex;
+    gap: 24px;
+    margin-top: ${theme.spacing.lg};
+    justify-content: space-between;
   `;
 
-  const footerStyles = css`
+  const errorStyles = css`
+    color: ${theme.colors.error[500]};
+    font-size: 14px;
+    margin-top: 8px;
     text-align: center;
-    margin-top: ${theme.spacing.xl};
-    padding-top: ${theme.spacing.xl};
-    border-top: 1px solid ${theme.colors.gray[200]};
   `;
 
-  const footerTextStyles = css`
-    font-size: ${theme.typography.fontSize.sm};
-    color: ${theme.colors.gray[600]};
-    margin: 0;
-  `;
-
-  const linkStyles = css`
-    color: ${theme.colors.primary[600]};
-    text-decoration: none;
-    font-weight: ${theme.typography.fontWeight.medium};
-
-    &:hover {
-      color: ${theme.colors.primary[700]};
-      text-decoration: underline;
-    }
-  `;
-
-  const demoCredentialsStyles = css`
-    margin-top: ${theme.spacing.xl};
-    padding: ${theme.spacing.lg};
-    background-color: ${theme.colors.gray[50]};
-    border-radius: ${theme.borderRadius.md};
-    border: 1px solid ${theme.colors.gray[200]};
-  `;
-
-  const demoTitleStyles = css`
-    font-size: ${theme.typography.fontSize.sm};
-    font-weight: ${theme.typography.fontWeight.semibold};
-    color: ${theme.colors.gray[700]};
-    margin: 0 0 ${theme.spacing.sm} 0;
-  `;
-
-  const demoTextStyles = css`
-    font-size: ${theme.typography.fontSize.xs};
-    color: ${theme.colors.gray[600]};
-    margin: ${theme.spacing.xs} 0;
+  const arrowIconStyles = css`
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
   `;
 
   return (
     <div css={containerStyles}>
-      <Card css={cardStyles} padding="lg" shadow="xl">
-        <div css={headerStyles}>
-          <h1 css={titleStyles}>🔐 {t("adminLogin")}</h1>
-          <p css={subtitleStyles}>{t("signInToAdmin")}</p>
-        </div>
+      <div css={cardStyles}>
+        <h1 css={titleStyles}>Sign In</h1>
 
-        <form onSubmit={onSubmit} css={formStyles}>
-          {error && <div css={errorAlertStyles}>{error}</div>}
+        <form css={formStyles} onSubmit={onSubmit}>
+          <div css={inputContainerStyles}>
+            <ControlledInput
+              label="Username"
+              name="userName"
+              control={control}
+              fullWidth
+            />
+            <ControlledInput
+              label="Password"
+              name="password"
+              control={control}
+              fullWidth
+            />
+          </div>
 
-          <Input
-            type="email"
-            label={t("email")}
-            placeholder={t("email")}
-            leftIcon="📧"
-          />
+          {error && (
+            <div css={errorStyles}>
+              {error instanceof Error
+                ? error.message
+                : "Login failed. Please try again."}
+            </div>
+          )}
 
-          <Input
-            type={showPassword ? "text" : "password"}
-            label={t("password")}
-            placeholder={t("password")}
-            leftIcon="🔒"
-            rightIcon={
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                css={css`
-                  background: none;
-                  border: none;
-                  cursor: pointer;
-                  font-size: ${theme.typography.fontSize.sm};
-                  color: ${theme.colors.gray[400]};
-                  padding: 0;
-                `}
-              >
-                {showPassword ? "👁️" : "👁️‍🗨️"}
-              </button>
-            }
-          />
-
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            fullWidth
-            loading={isLoading}
-          >
-            {isLoading ? t("loading") : t("signIn")}
-          </Button>
+          <div css={buttonContainerStyles}>
+            <Button
+              type="button"
+              variant="white"
+              size="sm"
+              onClick={() => navigate("/signup")}
+            >
+              Sign Up
+            </Button>
+            <Button
+              type="submit"
+              variant="black"
+              size="sm"
+              disabled={isPending}
+              style={{
+                cursor: isPending ? "not-allowed" : "pointer",
+                width: "116px",
+              }}
+            >
+              <svg css={arrowIconStyles} viewBox="0 0 24 24">
+                <path
+                  d="M5 12h14m-7-7l7 7-7 7"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </Button>
+          </div>
         </form>
-
-        <div css={footerStyles}>
-          <p css={footerTextStyles}>
-            {t("dontHaveAccount")}{" "}
-            <Link to="/signup" css={linkStyles}>
-              {t("signUp")}
-            </Link>
-          </p>
-        </div>
-
-        <div css={demoCredentialsStyles}>
-          <h3 css={demoTitleStyles}>{t("demoCredentials")}</h3>
-          <p css={demoTextStyles}>Email: admin@example.com</p>
-          <p css={demoTextStyles}>Password: password</p>
-        </div>
-      </Card>
+      </div>
     </div>
   );
 };

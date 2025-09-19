@@ -1,8 +1,10 @@
 import { css } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { Button } from "../components/ui";
 import { ControlledInput } from "../components/ui/ControlledInput";
+import { useAddAttribute } from "../hooks/useAtributers";
 import {
   attributeSchema,
   type AttributeFormData,
@@ -11,33 +13,46 @@ import { theme } from "../styles/theme";
 
 const AddAttribute = () => {
   const navigate = useNavigate();
-
+  const { mutate } = useAddAttribute();
   const { control, handleSubmit } = useForm<AttributeFormData>({
     resolver: zodResolver(attributeSchema),
-    defaultValues: {
+    values: {
       name: "",
       values: [{ value: "" }],
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append } = useFieldArray({
     control,
     name: "values",
   });
 
-  const handleAddValue = () => {
-    append({ value: "" });
-  };
+  // Watch the first value to determine if add button should be enabled
+  const firstValue = useWatch({
+    control,
+    name: "values.0.value",
+  });
 
-  const handleRemoveValue = (index: number) => {
-    if (fields.length > 1) {
-      remove(index);
+  const isFirstValueFilled = firstValue && firstValue.trim().length > 0;
+
+  const handleAddValue = () => {
+    if (isFirstValueFilled) {
+      append({ value: "" });
     }
   };
 
   const onSubmit = handleSubmit((data) => {
-    console.log("Saving attribute:", data);
-    navigate("/attributes");
+    mutate(
+      {
+        name: data.name,
+        values: data.values.map((value) => value.value),
+      },
+      {
+        onSuccess: () => {
+          navigate("/attributes");
+        },
+      }
+    );
   });
 
   const handleCancel = () => {
@@ -45,10 +60,10 @@ const AddAttribute = () => {
   };
 
   const containerStyles = css`
-    padding: ${theme.spacing.xl};
+    padding: 70px 100px;
     max-width: 1288px;
     margin: 0 auto;
-    min-height: 100vh;
+    height: 100%;
     display: flex;
     flex-direction: column;
   `;
@@ -58,7 +73,6 @@ const AddAttribute = () => {
     font-weight: ${theme.typography.fontWeight.bold};
     color: ${theme.colors.text.black};
     margin-bottom: ${theme.spacing.xl};
-    text-align: center;
   `;
 
   const inputGroupStyles = css`
@@ -74,184 +88,107 @@ const AddAttribute = () => {
 
   const valuesContainerStyles = css`
     margin-bottom: ${theme.spacing.lg};
-  `;
-
-  const labelStyles = css`
-    display: block;
-    font-size: ${theme.typography.fontSize.sm};
-    font-weight: ${theme.typography.fontWeight.medium};
-    color: ${theme.colors.text.black};
-    margin-bottom: ${theme.spacing.xs};
+    flex: 1;
   `;
 
   const valuesRowStyles = css`
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: ${theme.spacing.md};
     align-items: flex-start;
-    flex-direction: column;
     margin-bottom: ${theme.spacing.md};
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
   `;
 
   const valueInputWrapperStyles = css`
-    flex: 1;
     display: flex;
+    gap: 4px;
     align-items: center;
-    gap: ${theme.spacing.sm};
-  `;
-
-  const addButtonStyles = css`
-    background: none;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: ${theme.colors.primary[500]};
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-
-    &:hover {
-      background-color: ${theme.colors.primary[600]};
-    }
-  `;
-
-  const removeButtonStyles = css`
-    background: none;
-    border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: ${theme.colors.error[500]};
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-
-    &:hover {
-      background-color: ${theme.colors.error[600]};
-    }
   `;
 
   const buttonGroupStyles = css`
     display: flex;
-    gap: ${theme.spacing.md};
-    justify-content: center;
-    margin-top: ${theme.spacing.xl};
-  `;
-
-  const cancelButtonStyles = css`
-    background: white;
-    border: 1px solid ${theme.colors.text.black};
-    color: ${theme.colors.text.black};
-    padding: ${theme.spacing.md} ${theme.spacing.xl};
-    border-radius: 8px;
-    font-size: ${theme.typography.fontSize.base};
-    font-weight: ${theme.typography.fontWeight.medium};
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      background-color: ${theme.colors.gray[50]};
-    }
-  `;
-
-  const saveButtonStyles = css`
-    background: ${theme.colors.text.black};
-    border: 1px solid ${theme.colors.text.black};
-    color: white;
-    padding: ${theme.spacing.md} ${theme.spacing.xl};
-    border-radius: 8px;
-    font-size: ${theme.typography.fontSize.base};
-    font-weight: ${theme.typography.fontWeight.medium};
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      background-color: ${theme.colors.gray[800]};
-    }
+    justify-content: space-between;
   `;
 
   const formStyles = css`
     display: flex;
     gap: ${theme.spacing.lg};
+    height: 100%;
+    flex: 1;
+  `;
+
+  const formContainerStyles = css`
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
   `;
 
   return (
     <div css={containerStyles}>
       <h1 css={titleStyles}>Add Attribute</h1>
-      <div>
-        <form onSubmit={onSubmit}>
-          <div css={formStyles}>
-            <div css={inputGroupStyles}>
-              <div css={inputContainerStyles}>
-                <label css={labelStyles}>Name</label>
-                <ControlledInput name="name" control={control} label="Name" />
-              </div>
-            </div>
-
-            <div css={valuesContainerStyles}>
-              <label css={labelStyles}>Values</label>
-
-              {/* First row with two values side by side */}
-              <div css={valuesRowStyles}>
-                {fields.slice(0, 2).map((field, index) => {
-                  const isLastField = index === fields.length - 1;
-                  return (
-                    <div key={field.id} css={valueInputWrapperStyles}>
-                      <ControlledInput
-                        label="Value"
-                        name={`values.${index}.value`}
-                        control={control}
-                      />
-
-                      {fields.length > 1 && (
-                        <button
-                          css={removeButtonStyles}
-                          onClick={() => handleRemoveValue(index)}
-                          type="button"
-                        >
-                          ×
-                        </button>
-                      )}
-                      {isLastField && (
-                        <button
-                          css={addButtonStyles}
-                          onClick={handleAddValue}
-                          type="button"
-                        >
-                          +
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+      <form onSubmit={onSubmit} css={formContainerStyles}>
+        <div css={formStyles}>
+          <div css={inputGroupStyles}>
+            <div css={inputContainerStyles}>
+              <ControlledInput
+                name="name"
+                control={control}
+                label="Name"
+                variant="rounded"
+              />
             </div>
           </div>
 
-          <div css={buttonGroupStyles}>
-            <button
-              css={cancelButtonStyles}
-              onClick={handleCancel}
-              type="button"
-            >
-              Cancel
-            </button>
-            <button css={saveButtonStyles} type="submit">
-              Save
-            </button>
+          <div css={valuesContainerStyles}>
+            <div css={valuesRowStyles}>
+              {fields.map((field, index) => {
+                const isLastField = index === fields.length - 1;
+                return (
+                  <div key={field.id} css={valueInputWrapperStyles}>
+                    <ControlledInput
+                      label="Value"
+                      name={`values.${index}.value`}
+                      control={control}
+                      variant="rounded"
+                    />
+
+                    {isLastField && (
+                      <Button
+                        variant="iconButton"
+                        onClick={handleAddValue}
+                        type="button"
+                        size="xs"
+                        disabled={!isFirstValueFilled}
+                      >
+                        +
+                      </Button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </form>
-      </div>
+        </div>
+
+        <div css={buttonGroupStyles}>
+          <Button
+            variant="white"
+            onClick={handleCancel}
+            type="button"
+            size="md"
+          >
+            Cancel
+          </Button>
+          <Button variant="black" type="submit" size="md">
+            Save
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };

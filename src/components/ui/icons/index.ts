@@ -5,3 +5,4 @@ export { DashboardInactiveIcon } from "./DashboardInactiveIcon";
 export { LogoutIcon } from "./LogoutIcon";
 export { ProductsActiveIcon } from "./ProductsActiveIcon";
 export { ProductsInactiveIcon } from "./ProductsInactiveIcon";
+export { UserIcon } from "./User-icon";

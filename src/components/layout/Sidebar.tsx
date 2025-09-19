@@ -12,6 +12,7 @@ import {
   LogoutIcon,
   ProductsActiveIcon,
   ProductsInactiveIcon,
+  UserIcon,
 } from "../ui/icons";
 
 interface NavItem {
@@ -23,9 +24,9 @@ interface NavItem {
 
 export const Sidebar: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { user, logout } = useAuthStore();
+  const { user } = useAuthStore();
   const isRTL = i18n.language === "fa";
-
+  const { logout } = useAuthStore();
   const navItems: NavItem[] = [
     {
       path: "/",
@@ -59,18 +60,10 @@ export const Sidebar: React.FC = () => {
     },
   ];
 
-  const getUserInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((word) => word.charAt(0))
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
   const sidebarStyles = css`
     width: 300px;
     height: 100dvh;
-    background-color: white;
+    background: #ffffff66;
     border-radius: 0 40px 40px 0;
     border: 1px solid white;
     display: flex;
@@ -97,13 +90,11 @@ export const Sidebar: React.FC = () => {
     width: 60px;
     height: 60px;
     border-radius: ${theme.borderRadius.full};
-    background-color: ${theme.colors.gray[200]};
-    color: ${theme.colors.gray[600]};
+    background-color: white;
+    color: ${theme.colors.text.black};
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: ${theme.typography.fontSize.lg};
-    font-weight: ${theme.typography.fontWeight.semibold};
   `;
 
   const userNameStyles = css`
@@ -174,8 +165,10 @@ export const Sidebar: React.FC = () => {
   return (
     <aside css={sidebarStyles}>
       <div css={userSectionStyles}>
-        <div css={avatarStyles}>{getUserInitials(user?.name || "U")}</div>
-        <div css={userNameStyles}>{user?.name || "User"}</div>
+        <div css={avatarStyles}>
+          <UserIcon size={40} />
+        </div>
+        <div css={userNameStyles}>{user || "User"}</div>
       </div>
 
       <nav css={navStyles}>
@@ -196,7 +189,7 @@ export const Sidebar: React.FC = () => {
           padding: ${theme.spacing.lg} 0;
         `}
       >
-        <button css={logoutButtonStyles} onClick={logout}>
+        <button css={logoutButtonStyles} onClick={() => logout()}>
           <span css={iconStyles}>
             <LogoutIcon size={20} />
           </span>

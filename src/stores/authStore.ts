@@ -1,108 +1,74 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type {
-  LoginCredentials,
-  SignupCredentials,
-  User,
-} from "../features/auth/types/auth.types";
 
 interface AuthState {
-  user: User | null;
+  // State
   isAuthenticated: boolean;
+  token: string | null;
+  user: string | null;
   isLoading: boolean;
   error: string | null;
-}
 
-interface AuthActions {
-  login: (credentials: LoginCredentials) => Promise<void>;
-  signup: (credentials: SignupCredentials) => Promise<void>;
+  // Actions
+  setAuth: (token: string, user: string | null) => void;
+  clearAuth: () => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
   logout: () => void;
-  clearError: () => void;
-  checkAuth: () => Promise<void>;
 }
 
-type AuthStore = AuthState & AuthActions;
-
-export const useAuthStore = create<AuthStore>()(
+export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       // Initial state
-      user: null,
       isAuthenticated: false,
+      token: null,
+      user: null,
       isLoading: false,
       error: null,
 
       // Actions
-      login: async (credentials: LoginCredentials) => {
-        set({ isLoading: true, error: null });
-
-        // Simple mock login - accept any credentials
-        const user: User = {
-          id: "1",
-          email: credentials.email,
-          name: credentials.email.split("@")[0] || "User",
-          role: "admin",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-
+      setAuth: (token: string, user: string | null) => {
         set({
-          user,
           isAuthenticated: true,
-          isLoading: false,
+          token,
+          user,
           error: null,
         });
       },
 
-      signup: async (credentials: SignupCredentials) => {
-        set({ isLoading: true, error: null });
-
-        // Simple mock signup - accept any credentials
-        const user: User = {
-          id: Date.now().toString(),
-          email: credentials.email,
-          name: credentials.name,
-          role: "user",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-
+      clearAuth: () => {
         set({
-          user,
-          isAuthenticated: true,
-          isLoading: false,
+          isAuthenticated: false,
+          token: null,
+          user: null,
           error: null,
         });
+      },
+
+      setLoading: (loading: boolean) => {
+        set({ isLoading: loading });
+      },
+
+      setError: (error: string | null) => {
+        set({ error });
       },
 
       logout: () => {
         set({
-          user: null,
           isAuthenticated: false,
+          token: null,
+          user: null,
           error: null,
-        });
-      },
-
-      clearError: () => {
-        set({ error: null });
-      },
-
-      checkAuth: async () => {
-        set({ isLoading: true });
-
-        // Simple mock - check if user exists in state
-        const currentUser = get().user;
-        set({
-          isAuthenticated: !!currentUser,
-          isLoading: false,
         });
       },
     }),
     {
-      name: "auth-storage",
+      name: "auth-storage", // unique name for localStorage key
       partialize: (state) => ({
-        user: state.user,
         isAuthenticated: state.isAuthenticated,
+        token: state.token,
+        user: state.user,
       }),
     }
   )
