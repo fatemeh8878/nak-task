@@ -1,6 +1,2 @@
-// Export all services
-export * from "./api";
-export * from "./attributerService";
-export * from "./authService";
-export * from "./productService";
+// Export query client and utilities
 export * from "./queryClient";

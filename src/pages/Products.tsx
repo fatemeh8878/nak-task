@@ -7,11 +7,11 @@ import {
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useDeleteProduct, useProductList } from "../api/hooks/useProducts";
+import { type Product } from "../api/types";
 import { Button, Modal, Pagination } from "../components/ui";
 import { EditIcon, TrashIcon } from "../components/ui/icons";
 import { Table } from "../components/ui/Table";
-import { useDeleteProduct, useProductList } from "../hooks/useProducts";
-import { type Product } from "../services/productService";
 import { theme } from "../styles/theme";
 
 const columnHelper = createColumnHelper<Product>();
@@ -44,11 +44,13 @@ const Products = () => {
         header: t("name"),
         cell: (info) => info.getValue(),
       }),
-      columnHelper.accessor("countOfSkus", {
+      columnHelper.display({
+        id: "countOfSkus",
         header: "Count of SKUs",
         cell: (info) => info.row.original.skus?.length || 0,
       }),
-      columnHelper.accessor("action", {
+      columnHelper.display({
+        id: "action",
         header: "",
         cell: (info) => (
           <div
@@ -77,7 +79,7 @@ const Products = () => {
         ),
       }),
     ],
-    [t]
+    [t, navigate]
   );
 
   const table = useReactTable({

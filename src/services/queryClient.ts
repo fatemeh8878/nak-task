@@ -26,3 +26,29 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+// Query client utility functions
+export const queryClientUtils = {
+  // Invalidate all queries
+  invalidateAll: () => {
+    queryClient.invalidateQueries();
+  },
+
+  // Invalidate specific query keys
+  invalidateQueries: (queryKey: string[]) => {
+    queryClient.invalidateQueries({ queryKey });
+  },
+
+  // Clear all cache
+  clearCache: () => {
+    queryClient.clear();
+  },
+
+  // Prefetch data
+  prefetchQuery: async (
+    queryKey: string[],
+    queryFn: () => Promise<unknown>
+  ) => {
+    await queryClient.prefetchQuery({ queryKey, queryFn });
+  },
+};

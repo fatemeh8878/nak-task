@@ -1,4 +1,1 @@
-// Export all custom hooks
-export * from "./useAtributers";
-export * from "./useAuth";
-export * from "./useProducts";
+// Custom hooks will be created here when needed

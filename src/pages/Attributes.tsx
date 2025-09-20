@@ -7,9 +7,9 @@ import {
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useAttributerList } from "../api/hooks/useAttributes";
+import { type Attribute } from "../api/types";
 import { Button, Table } from "../components/ui";
-import { useAttributerList } from "../hooks/useAtributers";
-import { type Attribute } from "../services/attributerService";
 import { theme } from "../styles/theme";
 
 const Attributes = () => {

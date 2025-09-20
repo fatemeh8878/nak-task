@@ -3,9 +3,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { useRegisterMutation } from "../api/hooks/useAuth";
 import { Button } from "../components/ui";
 import { ControlledInput } from "../components/ui/ControlledInput";
-import { useRegisterMutation } from "../hooks/useAuth";
 import { signupSchema, type SignupFormData } from "../schemas/authSchema";
 import { theme } from "../styles/theme";
 
