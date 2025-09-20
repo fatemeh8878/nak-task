@@ -265,6 +265,10 @@ export const MultiSelectInput = <T extends FieldValues>({
     margin-left: 0;
   `;
 
+  const checkboxStyles = css`
+    margin: 0;
+  `;
+
   return (
     <div css={containerStyles} ref={containerRef}>
       <div css={selectContainerStyles}>
@@ -313,7 +317,7 @@ export const MultiSelectInput = <T extends FieldValues>({
                 type="checkbox"
                 checked={selectedValues.includes(option.value)}
                 onChange={() => {}} // Handled by onClick
-                style={{ margin: 0 }}
+                css={checkboxStyles}
               />
               {option.label}
             </div>

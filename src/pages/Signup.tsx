@@ -87,6 +87,11 @@ const Signup: React.FC = () => {
     fill: currentColor;
   `;
 
+  const submitButtonStyles = css`
+    cursor: ${isPending ? "not-allowed" : "pointer"};
+    width: 116px;
+  `;
+
   return (
     <div css={containerStyles}>
       <div css={cardStyles}>
@@ -140,10 +145,7 @@ const Signup: React.FC = () => {
               variant="black"
               size="sm"
               disabled={isPending}
-              style={{
-                cursor: isPending ? "not-allowed" : "pointer",
-                width: "116px",
-              }}
+              css={submitButtonStyles}
             >
               <svg css={arrowIconStyles} viewBox="0 0 24 24">
                 <path

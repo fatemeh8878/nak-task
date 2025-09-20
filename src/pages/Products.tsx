@@ -18,6 +18,17 @@ const columnHelper = createColumnHelper<Product>();
 
 const Products = () => {
   const { t } = useTranslation();
+
+  const actionCellStyles = css`
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+  `;
+
+  const iconButtonStyles = css`
+    cursor: pointer;
+  `;
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
@@ -53,16 +64,9 @@ const Products = () => {
         id: "action",
         header: "",
         cell: (info) => (
-          <div
-            style={{
-              display: "flex",
-              gap: 8,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <div css={actionCellStyles}>
             <div
-              style={{ cursor: "pointer" }}
+              css={iconButtonStyles}
               onClick={() =>
                 navigate(`/products/${info.row.original._id}/edit`)
               }
@@ -70,7 +74,7 @@ const Products = () => {
               <EditIcon width={16} height={16} color="gray" />
             </div>
             <div
-              style={{ cursor: "pointer" }}
+              css={iconButtonStyles}
               onClick={() => handleDeleteClick(info.row.original)}
             >
               <TrashIcon width={16} height={16} color="gray" />
