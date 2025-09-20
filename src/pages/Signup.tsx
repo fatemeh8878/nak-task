@@ -2,6 +2,7 @@ import { css } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useRegisterMutation } from "../api/hooks/useAuth";
 import { Button } from "../components/ui";
@@ -10,6 +11,7 @@ import { signupSchema, type SignupFormData } from "../schemas/authSchema";
 import { theme } from "../styles/theme";
 
 const Signup: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { mutate, isPending } = useRegisterMutation();
   const { control, handleSubmit } = useForm<SignupFormData>({

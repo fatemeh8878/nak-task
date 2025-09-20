@@ -1,10 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAttributerList } from "../../hooks";
-import { useProductDetail, useUpdateProduct } from "../../hooks/useProducts";
-import { useAddSku, useSkuDetail } from "../../hooks/useSku";
+import {
+  useAddSku,
+  useAttributerList,
+  useProductDetail,
+  useSkuDetail,
+  useUpdateProduct,
+} from "../../api/hooks";
 import {
   productSchema,
   type ProductFormData,
@@ -26,6 +31,7 @@ export const EditProductForm = () => {
   const { data: productDetail, isLoading: isLoadingProduct } = useProductDetail(
     id || ""
   );
+  const { t } = useTranslation();
   const { control, handleSubmit, watch, setValue, reset } =
     useForm<ProductFormData>({
       resolver: zodResolver(productSchema),

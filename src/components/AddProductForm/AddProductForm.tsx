@@ -1,10 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useAttributerList } from "../../hooks";
-import { useAddProduct } from "../../hooks/useProducts";
-import { useAddSku } from "../../hooks/useSku";
+import { useAddProduct, useAddSku, useAttributerList } from "../../api/hooks";
 import {
   productSchema,
   type ProductFormData,
@@ -18,6 +17,7 @@ import { styles } from "./styles";
 import { type SkuData } from "./types";
 
 export const AddProductForm = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [skuData, setSkuData] = useState<SkuData[]>([]);
   const { mutate: addProduct, isPending } = useAddProduct();
@@ -67,7 +67,7 @@ export const AddProductForm = () => {
   useEffect(() => {
     setSkuData(generatedSKUs);
     setValue("skus", [...(generatedSKUs || [])]);
-  }, [generatedSKUs]);
+  }, [generatedSKUs, setValue]);
 
   const handleRemoveSku = useCallback(
     (index: number) => {

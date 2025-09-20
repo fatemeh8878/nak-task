@@ -1,10 +1,11 @@
 import { css } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useAddAttribute } from "../api/hooks";
 import { Button } from "../components/ui";
 import { ControlledInput } from "../components/ui/ControlledInput";
-import { useAddAttribute } from "../hooks/useAtributers";
 import {
   attributeSchema,
   type AttributeFormData,
@@ -12,6 +13,7 @@ import {
 import { theme } from "../styles/theme";
 
 const AddAttribute = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { mutate } = useAddAttribute();
   const { control, handleSubmit } = useForm<AttributeFormData>({

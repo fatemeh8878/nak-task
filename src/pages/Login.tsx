@@ -2,6 +2,7 @@ import { css } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../api/hooks/useAuth";
 import { Button } from "../components/ui";
@@ -12,6 +13,7 @@ import { theme } from "../styles/theme";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { mutate, isPending, error } = useLoginMutation();
   const { setAuth } = useAuthStore();
   const { control, handleSubmit } = useForm<LoginFormData>({
