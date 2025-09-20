@@ -6,7 +6,7 @@ const Home: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuthStore();
 
-  const userName = user || "User";
+  const userName = user || t("user");
   console.log(user);
 
   return (

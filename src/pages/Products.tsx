@@ -46,7 +46,7 @@ const Products = () => {
       }),
       columnHelper.display({
         id: "countOfSkus",
-        header: "Count of SKUs",
+        header: t("countOfSkus"),
         cell: (info) => info.row.original.skus?.length || 0,
       }),
       columnHelper.display({
@@ -153,7 +153,7 @@ const Products = () => {
       <div css={tableContainerStyles}>
         <Table<Product>
           table={table}
-          emptyMessage="No products found"
+          emptyMessage={t("noProductsFound")}
           variant="rounded"
         />
       </div>

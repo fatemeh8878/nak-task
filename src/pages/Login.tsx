@@ -100,13 +100,13 @@ const Login: React.FC = () => {
         <form css={formStyles} onSubmit={onSubmit}>
           <div css={inputContainerStyles}>
             <ControlledInput
-              label="Username"
+              label={t("username")}
               name="userName"
               control={control}
               fullWidth
             />
             <ControlledInput
-              label="Password"
+              label={t("password")}
               name="password"
               control={control}
               fullWidth

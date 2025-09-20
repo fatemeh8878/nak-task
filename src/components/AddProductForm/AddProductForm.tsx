@@ -136,7 +136,7 @@ export const AddProductForm = () => {
             <ControlledInput
               name="name"
               control={control}
-              label="Name"
+              label={t("name")}
               variant="rounded"
             />
           </div>

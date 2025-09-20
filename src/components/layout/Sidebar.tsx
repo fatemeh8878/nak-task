@@ -168,7 +168,7 @@ export const Sidebar: React.FC = () => {
         <div css={avatarStyles}>
           <UserIcon size={40} />
         </div>
-        <div css={userNameStyles}>{user || "User"}</div>
+        <div css={userNameStyles}>{user || t("user")}</div>
       </div>
 
       <nav css={navStyles}>

@@ -200,7 +200,7 @@ export const EditProductForm = () => {
             <ControlledInput
               name="name"
               control={control}
-              label="Name"
+              label={t("name")}
               variant="rounded"
             />
           </div>

@@ -138,7 +138,7 @@ const AddAttribute = () => {
               <ControlledInput
                 name="name"
                 control={control}
-                label="Name"
+                label={t("name")}
                 variant="rounded"
               />
             </div>
@@ -151,7 +151,7 @@ const AddAttribute = () => {
                 return (
                   <div key={field.id} css={valueInputWrapperStyles}>
                     <ControlledInput
-                      label="Value"
+                      label={t("value")}
                       name={`values.${index}.value`}
                       control={control}
                       variant="rounded"

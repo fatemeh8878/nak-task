@@ -48,10 +48,10 @@ export const SkuTable = ({ data, control, onRemoveSku }: SkuTableProps) => {
         cell: (info) => info.row.index + 1,
       }),
       columnHelper.accessor("model", {
-        header: "Model",
+        header: t("model"),
       }),
       columnHelper.accessor("price", {
-        header: "Price",
+        header: t("price"),
         cell: (info) => (
           <Input
             name={`skus.${info.row.index}.price`}
@@ -62,7 +62,7 @@ export const SkuTable = ({ data, control, onRemoveSku }: SkuTableProps) => {
         ),
       }),
       columnHelper.accessor("numberInStock", {
-        header: "In Stock",
+        header: t("inStock"),
         cell: (info) => (
           <Input
             name={`skus.${info.row.index}.numberInStock`}
@@ -98,7 +98,7 @@ export const SkuTable = ({ data, control, onRemoveSku }: SkuTableProps) => {
     <>
       <Table<SkuData>
         table={table}
-        emptyMessage="Add attributes to generate SKUs"
+        emptyMessage={t("addAttributesToGenerateSkus")}
         variant="rounded"
       />
 

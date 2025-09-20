@@ -72,13 +72,13 @@ const Attributes = () => {
       <div css={headerStyles}>
         <h1 css={titleStyles}>{t("attributes")}</h1>
         <Button onClick={handleAddAttribute} variant="black">
-          Add Attribute +{" "}
+          {t("addAttribute")} +{" "}
         </Button>
       </div>
 
       <Table<Attribute>
         table={attributeTable}
-        emptyMessage="No attributes available"
+        emptyMessage={t("noAttributesAvailable")}
       />
     </div>
   );

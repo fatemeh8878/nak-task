@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useAttributeDetails } from "../../hooks";
+import { useAttributeDetails } from "../../api/hooks";
 import { Modal, MultiSelectInput, SelectInput } from "../ui";
 import { Button } from "../ui/Button";
 import { styles } from "./styles";
@@ -79,7 +79,7 @@ export const AttributeRow = ({
           name={`attributes.${attributeIndex}.name`}
           control={control}
           fullWidth
-          placeholder="Attribute"
+          placeholder={t("attribute")}
           variant={isLast ? "default" : "rounded"}
         />
       </div>
@@ -89,7 +89,7 @@ export const AttributeRow = ({
           name={`attributes.${attributeIndex}.values`}
           control={control}
           disabled={attributeOptionsDetails.length === 0}
-          placeholder="Values"
+          placeholder={t("values")}
           variant={isLast ? "default" : "rounded"}
           fullWidth
           options={attributeOptionsDetails}

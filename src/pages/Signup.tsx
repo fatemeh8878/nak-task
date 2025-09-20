@@ -93,31 +93,31 @@ const Signup: React.FC = () => {
         <form css={formStyles} onSubmit={onSubmit}>
           <div css={inputContainerStyles}>
             <ControlledInput
-              label="First Name"
+              label={t("firstName")}
               name="firstName"
               control={control}
               fullWidth
             />
             <ControlledInput
-              label="Last Name"
+              label={t("lastName")}
               name="lastName"
               control={control}
               fullWidth
             />
             <ControlledInput
-              label="Username"
+              label={t("username")}
               name="userName"
               control={control}
               fullWidth
             />
             <ControlledInput
-              label="Password"
+              label={t("password")}
               name="password"
               control={control}
               fullWidth
             />
             <ControlledInput
-              label="Confirm Password"
+              label={t("confirmPassword")}
               name="confirmPassword"
               control={control}
               fullWidth
